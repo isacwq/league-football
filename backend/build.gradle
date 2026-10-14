@@ -1,0 +1,63 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '4.1.1'
+	id 'io.spring.dependency-management' version '1.1.7'
+	id 'com.diffplug.spotless' version '8.10.4'
+}
+
+group = 'com.github.isacwq'
+version = '0.0.1-SNAPSHOT'
+description = 'league-football'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(17)
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	implementation 'org.springframework.boot:spring-boot-starter-webmvc'
+
+	testImplementation 'org.springframework.boot:spring-boot-starter-validation-test'
+	testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
+
+spotless {
+	java {
+		googleJavaFormat('1.36.0').reflowLongStrings().skipJavadocFormatting()
+		formatAnnotations()
+		importOrder()
+		removeUnusedImports()
+	}
+
+	groovyGradle {
+		target '*.gradle'
+		greclipse()
+	}
+}
+
+tasks.register('formatJava') {
+	dependsOn 'spotlessJavaApply'
+}
+
+tasks.register('formatGroovyGradle') {
+	dependsOn 'spotlessGroovyGradleApply'
+}
+
+tasks.register('checkFormatJava') {
+	dependsOn 'spotlessJavaCheck'
+}
+
+tasks.register('checkFormatGroovyGradle') {
+	dependsOn 'spotlessGroovyGradleCheck'
+}

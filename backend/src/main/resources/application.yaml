@@ -1,3 +1,7 @@
 spring:
   application:
     name: league-football
+  jackson:
+    property-naming-strategy: "SNAKE_CASE"
+    deserialization:
+      FAIL_ON_UNKNOWN_PROPERTIES: false

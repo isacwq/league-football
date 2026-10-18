@@ -1,8 +1,8 @@
 package com.github.isacwq.leaguefootball.dtos;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.github.isacwq.leaguefootball.enums.MatchResult;
 import java.time.OffsetDateTime;
-import java.util.regex.MatchResult;
 
 public record MatchSimpleResponseDto(
     Long id,

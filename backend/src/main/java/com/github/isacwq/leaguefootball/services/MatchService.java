@@ -5,6 +5,7 @@ import com.github.isacwq.leaguefootball.dtos.MatchDetailResponseDto;
 import com.github.isacwq.leaguefootball.dtos.MatchSimpleResponseDto;
 import com.github.isacwq.leaguefootball.exceptions.BusinessRuleException;
 import java.util.List;
+import org.jspecify.annotations.Nullable;
 
 public interface MatchService {
 
@@ -17,7 +18,7 @@ public interface MatchService {
   /**
    * Lista o histórico de partidas realizadas na liga com filtro opcional por clube.
    */
-  List<MatchSimpleResponseDto> findAll(Long clubId);
+  List<MatchSimpleResponseDto> findAll(@Nullable Long clubId);
 
   /**
    * Consulta os detalhes de uma partida e o resultado individual dos 6 duelos (RN21).

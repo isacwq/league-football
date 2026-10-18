@@ -5,3 +5,11 @@ spring:
     property-naming-strategy: "SNAKE_CASE"
     deserialization:
       FAIL_ON_UNKNOWN_PROPERTIES: false
+  datasource:
+    url: "jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:league_football}"
+    username: "${DB_USER:postgres}"
+    password: "${DB_PASS:postgres}"
+  jpa:
+    hibernate:
+      ddl-auto: "update"
+    database-platform: "org.hibernate.dialect.PostgreSQLDialect"

@@ -150,7 +150,7 @@ class LeagueFootballIntegrationTest {
                 .param("sort", "value_desc"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.data").isArray())
-        .andExpect(jsonPath("$.page").value(1));
+        .andExpect(jsonPath("$.meta.page").value(1));
   }
 
   @Test
@@ -382,7 +382,7 @@ class LeagueFootballIntegrationTest {
         .perform(get("/api/v1/clubs/" + club1Id + "/transactions").param("type", "COMPRA,VENDA"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.summary").exists())
-        .andExpect(jsonPath("$.transactions", hasSize(2)));
+        .andExpect(jsonPath("$.data", hasSize(2)));
 
     // Step 6: Exportação do Histórico em formato CSV (200 OK)
     mockMvc

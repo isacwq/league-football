@@ -258,14 +258,8 @@ export const ClubsPage: React.FC = () => {
                         <table className="w-full text-left text-sm text-slate-300">
                           <thead className="bg-slate-800/80 text-xs uppercase text-slate-400 border-b border-slate-700">
                             <tr>
-                              <th
-                                className="px-4 py-3>Atleta</th>
-                                <th className="
-                                px-4
-                                py-3
-                              >
-                                Posição
-                              </th>
+                              <th className="px-4 py-3">Atleta</th>
+                              <th className="px-4 py-3">Posição</th>
                               <th className="px-4 py-3 text-center">Overall</th>
                               <th className="px-4 py-3 text-right">
                                 Valor de Mercado

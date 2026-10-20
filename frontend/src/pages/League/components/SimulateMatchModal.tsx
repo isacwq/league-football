@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { leagueService } from '../../../services/leagueService';
 import type { Club, Match } from '../../../types';
 
@@ -15,15 +15,39 @@ export const SimulateMatchModal: React.FC<SimulateMatchModalProps> = ({
   onClose,
   onSuccess,
 }) => {
-  const [homeClubId, setHomeClubId] = useState<number>(clubs[0]?.id || 0);
-  const [awayClubId, setAwayClubId] = useState<number>(clubs[1]?.id || 0);
+  const [homeClubId, setHomeClubId] = useState<number>(0);
+  const [awayClubId, setAwayClubId] = useState<number>(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let isSubscribed = true;
+
+    const initClubs = async () => {
+      await Promise.resolve();
+      if (isSubscribed && clubs && clubs.length > 0) {
+        setHomeClubId(clubs[0].id);
+        setAwayClubId(clubs.length > 1 ? clubs[1].id : clubs[0].id);
+      }
+    };
+
+    initClubs();
+
+    return () => {
+      isSubscribed = false;
+    };
+  }, [clubs, isOpen]);
 
   if (!isOpen) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!homeClubId || !awayClubId) {
+      setError('Selecione ambos os clubes para simular a partida.');
+      return;
+    }
+
     if (homeClubId === awayClubId) {
       setError('O clube mandante e o visitante não podem ser o mesmo.');
       return;

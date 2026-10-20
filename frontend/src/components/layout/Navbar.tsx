@@ -106,7 +106,7 @@ export const Navbar: React.FC = () => {
                       Saldo
                     </span>
                     <span className="text-xs font-bold text-emerald-400">
-                      R\$ {formatCurrency(selectedClub.cash)}
+                      R$ {formatCurrency(selectedClub.cash)}
                     </span>
                   </div>
                 )}

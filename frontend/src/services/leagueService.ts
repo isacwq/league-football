@@ -1,5 +1,5 @@
 import { api } from './api';
-import { Match, CreateMatchDTO, Standing } from '../types';
+import type { Match, CreateMatchDTO, Standing } from '../types';
 
 export const leagueService = {
   /**

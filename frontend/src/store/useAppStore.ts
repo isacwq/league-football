@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { Club } from '../types';
+import type { Club } from '../types';
 
 interface AppState {
   selectedClubId: number | null;

@@ -16,7 +16,7 @@ export const marketService = {
     data: BuyPlayerDTO
   ): Promise<BuyTransactionResponse> {
     const response = await api.post<BuyTransactionResponse>(
-      `/market/buy/${playerId}`,
+      `/players/${playerId}/buy`,
       data
     );
     return response.data;

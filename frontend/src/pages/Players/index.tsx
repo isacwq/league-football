@@ -12,6 +12,8 @@ import { CreatePlayerModal } from './components/CreatePlayerModal';
 import { ConditionModal } from './components/ConditionModal';
 import { BuyPlayerModal } from './components/BuyPlayerModal';
 import { DeletePlayerModal } from './components/DeletePlayerModal';
+import { PlayerDetailModal } from './components/PlayerDetailModal';
+import { EditPlayerModal } from './components/EditPlayerModal';
 
 export const PlayersPage: React.FC = () => {
   const [players, setPlayers] = useState<Player[]>([]);
@@ -31,6 +33,11 @@ export const PlayersPage: React.FC = () => {
   const [totalItems, setTotalItems] = useState(0);
 
   const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [selectedDetailPlayer, setSelectedDetailPlayer] =
+    useState<Player | null>(null);
+  const [selectedEditPlayer, setSelectedEditPlayer] = useState<Player | null>(
+    null
+  );
   const [selectedConditionPlayer, setSelectedConditionPlayer] =
     useState<Player | null>(null);
   const [selectedBuyPlayer, setSelectedBuyPlayer] = useState<Player | null>(
@@ -261,6 +268,7 @@ export const PlayersPage: React.FC = () => {
                         <button
                           onClick={() => setSelectedConditionPlayer(p)}
                           className="hover:opacity-80 cursor-pointer"
+                          title="Clique para alterar a condição física"
                         >
                           {p.condition === 'APTO' && (
                             <span className="px-2 py-0.5 rounded text-[11px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-medium">
@@ -294,27 +302,48 @@ export const PlayersPage: React.FC = () => {
                           <span className="text-slate-500 italic">Livre</span>
                         )}
                       </td>
-                      <td className="px-4 py-3 text-center space-x-2">
-                        {p.club_id === null ? (
-                          <>
-                            <button
-                              onClick={() => setSelectedBuyPlayer(p)}
-                              className="px-2.5 py-1 bg-emerald-600/20 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-600/40 rounded text-xs font-semibold"
-                            >
-                              Comprar
-                            </button>
-                            <button
-                              onClick={() => setSelectedDeletePlayer(p)}
-                              className="px-2.5 py-1 bg-rose-600/10 text-rose-400 hover:bg-rose-600/30 rounded text-xs font-medium"
-                            >
-                              Excluir
-                            </button>
-                          </>
-                        ) : (
-                          <span className="text-xs text-slate-500 italic">
-                            -
-                          </span>
-                        )}
+                      <td className="px-4 py-3 text-center">
+                        <div className="flex items-center justify-center space-x-1 sm:space-x-1.5 flex-wrap gap-y-1">
+                          <button
+                            onClick={() => setSelectedDetailPlayer(p)}
+                            className="px-2 py-1 bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white border border-slate-700 rounded text-xs font-medium transition-colors"
+                            title="Ver Detalhes"
+                          >
+                            Detalhes
+                          </button>
+                          <button
+                            onClick={() => setSelectedEditPlayer(p)}
+                            className="px-2 py-1 bg-sky-600/20 text-sky-400 border border-sky-500/30 hover:bg-sky-600/40 rounded text-xs font-medium transition-colors"
+                            title="Editar Jogador"
+                          >
+                            Editar
+                          </button>
+                          <button
+                            onClick={() => setSelectedConditionPlayer(p)}
+                            className="px-2 py-1 bg-amber-600/20 text-amber-400 border border-amber-500/30 hover:bg-amber-600/40 rounded text-xs font-medium transition-colors"
+                            title="Alterar Condição"
+                          >
+                            Condição
+                          </button>
+                          {p.club_id === null && (
+                            <>
+                              <button
+                                onClick={() => setSelectedBuyPlayer(p)}
+                                className="px-2 py-1 bg-emerald-600/20 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-600/40 rounded text-xs font-semibold transition-colors"
+                                title="Comprar Atleta"
+                              >
+                                Comprar
+                              </button>
+                              <button
+                                onClick={() => setSelectedDeletePlayer(p)}
+                                className="px-2 py-1 bg-rose-600/10 text-rose-400 border border-rose-500/20 hover:bg-rose-600/30 rounded text-xs font-medium transition-colors"
+                                title="Excluir Jogador"
+                              >
+                                Excluir
+                              </button>
+                            </>
+                          )}
+                        </div>
                       </td>
                     </tr>
                   );
@@ -354,6 +383,35 @@ export const PlayersPage: React.FC = () => {
       <CreatePlayerModal
         isOpen={isCreateOpen}
         onClose={() => setIsCreateOpen(false)}
+        onSuccess={fetchPlayers}
+      />
+
+      <PlayerDetailModal
+        player={selectedDetailPlayer}
+        clubName={
+          clubs.find((c) => c.id === selectedDetailPlayer?.club_id)?.name
+        }
+        onClose={() => setSelectedDetailPlayer(null)}
+        onEdit={() => {
+          const p = selectedDetailPlayer;
+          setSelectedDetailPlayer(null);
+          setSelectedEditPlayer(p);
+        }}
+        onChangeCondition={() => {
+          const p = selectedDetailPlayer;
+          setSelectedDetailPlayer(null);
+          setSelectedConditionPlayer(p);
+        }}
+        onBuy={() => {
+          const p = selectedDetailPlayer;
+          setSelectedDetailPlayer(null);
+          setSelectedBuyPlayer(p);
+        }}
+      />
+
+      <EditPlayerModal
+        player={selectedEditPlayer}
+        onClose={() => setSelectedEditPlayer(null)}
         onSuccess={fetchPlayers}
       />
 

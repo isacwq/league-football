@@ -337,7 +337,7 @@ class LeagueFootballIntegrationTest {
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.player_id").value(playerId))
         .andExpect(jsonPath("$.club_id").value(club1Id))
-        .andExpect(jsonPath("$.club_cash_after").exists());
+        .andExpect(jsonPath("$.club_cash").exists());
 
     // Step 2: Clube 2 tenta comprar jogador que já possui vínculo (409 Conflict)
     String buyPayloadClub2 =

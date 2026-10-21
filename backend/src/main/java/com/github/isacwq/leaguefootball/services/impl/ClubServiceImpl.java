@@ -137,20 +137,36 @@ public class ClubServiceImpl implements ClubService {
             p.getBaseValue(), p.getCondition(), p.getAgility(), p.getAge());
 
     var contract = p.getActiveContract();
-    long remainingDays =
-        calculator.calculateRemainingDays(
-            contract.getLoyaltyUntil(), java.time.OffsetDateTime.now());
-    BigDecimal penaltyRate = calculator.calculateLoyaltyPenalty(marketValue, remainingDays);
 
-    ContractInfoDto contractDto =
-        new ContractInfoDto(contract.getStatus(), contract.getLoyaltyUntil(), penaltyRate);
+    ContractInfoDto contractDto = null;
+    if (contract != null) {
+      long remainingDays =
+          calculator.calculateRemainingDays(
+              contract.getLoyaltyUntil(), java.time.OffsetDateTime.now());
+      int penaltyRate = calculator.calculateLoyaltyPenaltyRate(remainingDays);
+      contractDto =
+          new ContractInfoDto(
+              contract.getPurchaseValue(), contract.getLoyaltyUntil(), remainingDays, penaltyRate);
+    }
+
     return new ClubPlayerItemDto(
         p.getId(),
         p.getName(),
         p.getPosition(),
-        overall,
-        marketValue,
+        p.getAgility(),
+        p.getAge(),
         p.getCondition(),
+        p.getBaseValue(),
+        marketValue,
+        p.getPace(),
+        p.getShooting(),
+        p.getPassing(),
+        p.getDribbling(),
+        p.getDefending(),
+        p.getPhysical(),
+        p.getPotential(),
+        overall,
+        p.getClub() != null ? p.getClub().getId() : null,
         contractDto);
   }
 }

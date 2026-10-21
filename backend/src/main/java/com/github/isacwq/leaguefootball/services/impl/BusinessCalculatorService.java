@@ -129,6 +129,13 @@ public class BusinessCalculatorService {
     return penalty.compareTo(cap) > 0 ? cap : penalty;
   }
 
+  public int calculateLoyaltyPenaltyRate(long remainingDays) {
+    if (remainingDays <= 0) return 0;
+    if (remainingDays <= 30) return 5;
+    if (remainingDays <= 180) return 10;
+    return 20;
+  }
+
   // RN16: Comissão progressiva da liga cobrada sobre o lucro obtido na venda do atleta.
   public BigDecimal calculateSalesCommission(BigDecimal profit) {
     if (profit.compareTo(BigDecimal.ZERO) <= 0) return BigDecimal.ZERO.setScale(2);

@@ -27,7 +27,7 @@ export const marketService = {
    */
   async sellPlayer(playerId: number): Promise<SellTransactionResponse> {
     const response = await api.post<SellTransactionResponse>(
-      `/market/sell/${playerId}`
+      `/players/${playerId}/sell`
     );
     return response.data;
   },

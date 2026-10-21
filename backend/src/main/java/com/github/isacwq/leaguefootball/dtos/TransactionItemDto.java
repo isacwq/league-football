@@ -7,14 +7,18 @@ import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import org.jspecify.annotations.Nullable;
 
+/**
+ * DTO de representação de um item individual do histórico de transações (RN17).
+ */
 public record TransactionItemDto(
     Long id,
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ssXXX") OffsetDateTime createdAt,
-    TransactionType type,
+    Long clubId,
     Long playerId,
     String playerName,
-    BigDecimal amount,
-    BigDecimal commission,
-    BigDecimal fine,
+    TransactionType type,
+    BigDecimal value,
+    BigDecimal fee,
+    BigDecimal penalty,
     @Nullable @JsonInclude(JsonInclude.Include.ALWAYS) BigDecimal profit,
-    BigDecimal cashVariation) {}
+    BigDecimal cashChange,
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ssXXX") OffsetDateTime createdAt) {}

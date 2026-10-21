@@ -137,14 +137,15 @@ public class TransactionServiceImpl implements TransactionService {
   private TransactionItemDto mapToItemDto(TransactionEntity t) {
     return new TransactionItemDto(
         t.getId(),
-        t.getCreatedAt(),
-        t.getType(),
+        t.getClub().getId(),
         t.getPlayer().getId(),
         t.getPlayerName(),
+        t.getType(),
         t.getValue(),
         t.getFee(),
         t.getPenalty(),
         t.getProfit(),
-        t.getCashChange());
+        t.getCashChange(),
+        t.getCreatedAt());
   }
 }

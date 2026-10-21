@@ -11,6 +11,7 @@ import { EmptyState } from '../../components/shared/EmptyState';
 import { CreatePlayerModal } from './components/CreatePlayerModal';
 import { ConditionModal } from './components/ConditionModal';
 import { BuyPlayerModal } from './components/BuyPlayerModal';
+import { DeletePlayerModal } from './components/DeletePlayerModal';
 
 export const PlayersPage: React.FC = () => {
   const [players, setPlayers] = useState<Player[]>([]);
@@ -35,6 +36,8 @@ export const PlayersPage: React.FC = () => {
   const [selectedBuyPlayer, setSelectedBuyPlayer] = useState<Player | null>(
     null
   );
+  const [selectedDeletePlayer, setSelectedDeletePlayer] =
+    useState<Player | null>(null);
 
   const fetchPlayers = useCallback(async () => {
     try {
@@ -103,23 +106,6 @@ export const PlayersPage: React.FC = () => {
       isSubscribed = false;
     };
   }, []);
-
-  const handleDelete = async (player: Player) => {
-    if (
-      !window.confirm(
-        `Tem certeza que deseja excluir o jogador ${player.name}?`
-      )
-    )
-      return;
-    try {
-      await playerService.deletePlayer(player.id);
-      fetchPlayers();
-    } catch (err) {
-      const message =
-        err instanceof Error ? err.message : 'Erro ao excluir jogador.';
-      alert(message);
-    }
-  };
 
   return (
     <div className="space-y-6">
@@ -318,7 +304,7 @@ export const PlayersPage: React.FC = () => {
                               Comprar
                             </button>
                             <button
-                              onClick={() => handleDelete(p)}
+                              onClick={() => setSelectedDeletePlayer(p)}
                               className="px-2.5 py-1 bg-rose-600/10 text-rose-400 hover:bg-rose-600/30 rounded text-xs font-medium"
                             >
                               Excluir
@@ -336,11 +322,11 @@ export const PlayersPage: React.FC = () => {
               </tbody>
             </table>
           </div>
+
           <div className="p-4 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
             <span>
-              {' '}
               Mostrando {(page - 1) * 10 + 1}-{Math.min(page * 10, totalItems)}{' '}
-              de {totalItems} jogadores{' '}
+              de {totalItems} jogadores
             </span>
             <div className="flex space-x-2">
               <button
@@ -351,8 +337,7 @@ export const PlayersPage: React.FC = () => {
                 Anterior
               </button>
               <span className="px-3 py-1.5 font-semibold text-white">
-                {' '}
-                Página {page} de {totalPages}{' '}
+                Página {page} de {totalPages}
               </span>
               <button
                 disabled={page >= totalPages}
@@ -365,6 +350,7 @@ export const PlayersPage: React.FC = () => {
           </div>
         </div>
       )}
+
       <CreatePlayerModal
         isOpen={isCreateOpen}
         onClose={() => setIsCreateOpen(false)}
@@ -380,6 +366,12 @@ export const PlayersPage: React.FC = () => {
       <BuyPlayerModal
         player={selectedBuyPlayer}
         onClose={() => setSelectedBuyPlayer(null)}
+        onSuccess={fetchPlayers}
+      />
+
+      <DeletePlayerModal
+        player={selectedDeletePlayer}
+        onClose={() => setSelectedDeletePlayer(null)}
         onSuccess={fetchPlayers}
       />
     </div>

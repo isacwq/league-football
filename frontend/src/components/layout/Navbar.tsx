@@ -31,7 +31,6 @@ export const Navbar: React.FC = () => {
     { path: '/players', label: 'Jogadores' },
     { path: '/clubs', label: 'Clubes' },
     { path: '/market', label: 'Mercado' },
-    { path: '/history', label: 'Histórico' },
     { path: '/league', label: 'Liga & Partidas' },
   ];
 

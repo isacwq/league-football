@@ -170,48 +170,30 @@ export const ClubsPage: React.FC = () => {
     t.player_name?.toLowerCase().includes(playerSearch.toLowerCase())
   );
 
-  const handleExportCSV = () => {
-    if (!filteredTransactions.length || !selectedClub) return;
+  const handleExportCSV = async () => {
+    if (!selectedClub) return;
+    try {
+      const typeParam = typeFilter === 'ALL' ? undefined : typeFilter;
+      const blobData = await marketService.exportTransactionsCSV(
+        selectedClub.id,
+        {
+          type: typeParam,
+        }
+      );
 
-    const headers = [
-      'ID',
-      'Data/Hora',
-      'Atleta',
-      'Tipo',
-      'Valor (R$)',
-      'Taxa (R$)',
-      'Multa (R$)',
-      'Variação Caixa (R$)',
-    ];
-    const rows = filteredTransactions.map((t) => [
-      t.id,
-      formatDateTime(t.created_at),
-      `"${t.player_name.replace(/"/g, '""')}"`,
-      t.type,
-      formatCurrency(t.value),
-      formatCurrency(t.fee),
-      formatCurrency(t.penalty),
-      formatCashChange(t.cash_change),
-    ]);
-
-    const csvContent = [
-      headers.join(';'),
-      ...rows.map((r) => r.join(';')),
-    ].join('\n');
-    const blob = new Blob(['\uFEFF' + csvContent], {
-      type: 'text/csv;charset=utf-8;',
-    });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.setAttribute('href', url);
-    link.setAttribute(
-      'download',
-      `historico_transacoes_${selectedClub.acronym}.csv`
-    );
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+      const url = window.URL.createObjectURL(
+        new Blob([blobData], { type: 'text/csv;charset=utf-8;' })
+      );
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `historico_${selectedClub.acronym}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error('Erro ao baixar CSV da API:', err);
+    }
   };
 
   return (

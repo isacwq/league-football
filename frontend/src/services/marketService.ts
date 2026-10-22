@@ -45,4 +45,28 @@ export const marketService = {
     );
     return response.data;
   },
+
+  /**
+   * Exporta o histórico de transações financeiras de um clube em arquivo CSV.
+   *
+   * Consome diretamente o endpoint oficial da API `GET /clubs/{id}/transactions/export`,
+   * retornando os dados no formato `Blob` para download no navegador.
+   *
+   * @param clubId - ID do clube cujas transações serão exportadas.
+   * @param params - Filtros opcionais de tipo de operação ('COMPRA' | 'VENDA') e atleta.
+   * @returns Promise que resolve com o Blob do arquivo CSV gerado pelo backend.
+   */
+  async exportTransactionsCSV(
+    clubId: number,
+    params?: TransactionQueryParams
+  ): Promise<Blob> {
+    const response = await api.get<Blob>(
+      `/clubs/${clubId}/transactions/export`,
+      {
+        params,
+        responseType: 'blob',
+      }
+    );
+    return response.data;
+  },
 };

@@ -9,7 +9,11 @@ import type {
 
 export const marketService = {
   /**
-   * Realiza a compra de um jogador por um clube com definição da fidelidade contratual
+   * Realiza a compra de um jogador por um clube no mercado de transferências.
+   *
+   * @param playerId - ID do jogador a ser comprado.
+   * @param data - Objeto contendo club_id e player_id.
+   * @returns Dados da transação de compra concluída.
    */
   async buyPlayer(
     playerId: number,
@@ -23,7 +27,10 @@ export const marketService = {
   },
 
   /**
-   * Realiza a venda de um jogador pertencente ao clube
+   * Realiza a venda/rescisão do contrato de um jogador de um clube.
+   *
+   * @param playerId - ID do jogador a ser vendido.
+   * @returns Dados da transação de venda e alteração no caixa do clube.
    */
   async sellPlayer(playerId: number): Promise<SellTransactionResponse> {
     const response = await api.post<SellTransactionResponse>(
@@ -33,7 +40,11 @@ export const marketService = {
   },
 
   /**
-   * Consulta o histórico detalhado de transações financeiras de um clube
+   * Busca o histórico de transações de um clube com suporte a filtros.
+   *
+   * @param clubId - ID do clube para consulta do histórico.
+   * @param params - Filtros opcionais (tipo de operação 'COMPRA' | 'VENDA', player_id).
+   * @returns Resposta contendo a lista de transações e o resumo financeiro.
    */
   async getTransactions(
     clubId: number,

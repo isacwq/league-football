@@ -140,7 +140,8 @@ class LeagueFootballIntegrationTest {
   }
 
   @Test
-  @DisplayName("1.4 Deve listar jogadores com paginação, filtros e ordenação por valor descendente")
+  @DisplayName(
+      "1.4a Deve listar jogadores com paginação, filtros e ordenação por valor descendente")
   void shouldListPlayersWithPaginationAndSorting() throws Exception {
     mockMvc
         .perform(
@@ -150,7 +151,54 @@ class LeagueFootballIntegrationTest {
                 .param("sort", "value_desc"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.data").isArray())
-        .andExpect(jsonPath("$.page").value(1));
+        .andExpect(jsonPath("$.meta.page").value(1));
+  }
+
+  @Test
+  @DisplayName(
+      "1.4b Deve listar jogadores ordenados por hierarquia tática quando sort=position (RN07)")
+  void shouldListPlayersOrderedByTacticalPosition() throws Exception {
+    // Cadastra 5 jogadores em posições mistas (fora da ordem tática)
+    createPlayerViaApi("Atacante Silva", "ATA");
+    createPlayerViaApi("Lateral Souza", "LAT");
+    createPlayerViaApi("Goleiro Santos", "GOL");
+    createPlayerViaApi("Meia Lima", "MEI");
+    createPlayerViaApi("Zagueiro Alves", "ZAG");
+
+    mockMvc
+        .perform(get("/api/v1/players").param("sort", "position"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.data[0].position").value("GOL"))
+        .andExpect(jsonPath("$.data[1].position").value("ZAG"))
+        .andExpect(jsonPath("$.data[2].position").value("LAT"))
+        .andExpect(jsonPath("$.data[3].position").value("MEI"))
+        .andExpect(jsonPath("$.data[4].position").value("ATA"));
+  }
+
+  private void createPlayerViaApi(String name, String position) throws Exception {
+    String jsonPayload =
+        String.format(
+            """
+            {
+                "name": "%s",
+                "position": "%s",
+                "agility": 80,
+                "age": 22,
+                "pace": 75,
+                "shooting": 65,
+                "passing": 70,
+                "dribbling": 70,
+                "defending": 70,
+                "physical": 70,
+                "potential": 85
+            }
+            """,
+            name, position);
+
+    mockMvc
+        .perform(
+            post("/api/v1/players").contentType(MediaType.APPLICATION_JSON).content(jsonPayload))
+        .andExpect(status().isCreated());
   }
 
   @Test
@@ -337,7 +385,7 @@ class LeagueFootballIntegrationTest {
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.player_id").value(playerId))
         .andExpect(jsonPath("$.club_id").value(club1Id))
-        .andExpect(jsonPath("$.club_cash_after").exists());
+        .andExpect(jsonPath("$.club_cash").exists());
 
     // Step 2: Clube 2 tenta comprar jogador que já possui vínculo (409 Conflict)
     String buyPayloadClub2 =
@@ -382,7 +430,7 @@ class LeagueFootballIntegrationTest {
         .perform(get("/api/v1/clubs/" + club1Id + "/transactions").param("type", "COMPRA,VENDA"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.summary").exists())
-        .andExpect(jsonPath("$.transactions", hasSize(2)));
+        .andExpect(jsonPath("$.data", hasSize(2)));
 
     // Step 6: Exportação do Histórico em formato CSV (200 OK)
     mockMvc

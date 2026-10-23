@@ -1,5 +1,6 @@
 package com.github.isacwq.leaguefootball.services.impl;
 
+import com.github.isacwq.leaguefootball.dtos.BuyContractResponseDto;
 import com.github.isacwq.leaguefootball.dtos.BuyPlayerDto;
 import com.github.isacwq.leaguefootball.dtos.BuyTransactionResponseDto;
 import com.github.isacwq.leaguefootball.dtos.SellTransactionResponseDto;
@@ -121,12 +122,22 @@ public class MarketServiceImpl implements MarketService {
     playerRepository.save(player);
     clubRepository.save(club);
 
+    BuyContractResponseDto contractDto =
+        new BuyContractResponseDto(marketValue, dto.loyaltyUntil(), ContractStatus.ATIVO);
+
     return new BuyTransactionResponseDto(
         savedTx.getId(),
-        player.getId(),
         club.getId(),
+        player.getId(),
+        player.getName(),
+        TransactionType.COMPRA,
         marketValue,
-        dto.loyaltyUntil(),
+        fee,
+        BigDecimal.ZERO.setScale(2),
+        null, // profit é nulo na compra
+        totalCost.negate(),
+        savedTx.getCreatedAt(),
+        contractDto,
         club.getCash());
   }
 

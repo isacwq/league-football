@@ -65,8 +65,9 @@ public class PlayerServiceImpl implements PlayerService {
     Page<PlayerEntity> entityPage = playerRepository.findAll(spec, pageable);
     var data = entityPage.getContent().stream().map(this::mapToResponseDto).toList();
 
-    return new PlayerListResponseDto(
-        data, page, limit, entityPage.getTotalElements(), entityPage.getTotalPages());
+    PageMetaDto meta =
+        new PageMetaDto(page, limit, entityPage.getTotalElements(), entityPage.getTotalPages());
+    return new PlayerListResponseDto(data, meta);
   }
 
   @Override
@@ -272,6 +273,10 @@ public class PlayerServiceImpl implements PlayerService {
   private Sort parsePlayerSort(@Nullable String sortParam) {
     if (sortParam == null || sortParam.isBlank()) {
       return Sort.by("name").ascending().and(Sort.by("id").ascending());
+    }
+
+    if (sortParam.contains("position")) {
+      return Sort.unsorted();
     }
 
     String[] criteria = sortParam.split(",");

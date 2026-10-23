@@ -76,11 +76,19 @@ class MarketServiceImplTest {
 
     BuyTransactionResponseDto response = marketService.buyPlayer(1L, dto);
 
-    assertThat(response.transactionId()).isEqualTo(100L);
-    assertThat(response.playerId()).isEqualTo(1L);
+    assertThat(response.id()).isEqualTo(100L);
     assertThat(response.clubId()).isEqualTo(1L);
-    assertThat(response.amount()).isEqualByComparingTo("40.00");
-    assertThat(response.clubCashAfter()).isEqualByComparingTo("258.00");
+    assertThat(response.playerId()).isEqualTo(1L);
+    assertThat(response.playerName()).isEqualTo("Meia Lua");
+    assertThat(response.type()).isEqualTo(TransactionType.COMPRA);
+    assertThat(response.value()).isEqualByComparingTo("40.00");
+    assertThat(response.fee()).isEqualByComparingTo("2.00");
+    assertThat(response.penalty()).isEqualByComparingTo("0.00");
+    assertThat(response.profit()).isNull();
+    assertThat(response.cashChange()).isEqualByComparingTo("-42.00");
+    assertThat(response.contract().purchaseValue()).isEqualByComparingTo("40.00");
+    assertThat(response.contract().status()).isEqualTo(ContractStatus.ATIVO);
+    assertThat(response.clubCash()).isEqualByComparingTo("258.00");
     verify(playerRepository, times(1)).save(player);
     verify(clubRepository, times(1)).save(club);
   }

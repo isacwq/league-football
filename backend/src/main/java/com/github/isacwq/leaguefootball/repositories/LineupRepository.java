@@ -25,7 +25,17 @@ public interface LineupRepository extends JpaRepository<LineupEntity, Long> {
       """
           SELECT l.player FROM LineupEntity l
           WHERE l.club.id = :clubId AND l.player.deletedAt IS NULL
-          ORDER BY l.player.position ASC, l.player.name ASC, l.player.id ASC
+          ORDER BY
+            CASE l.player.position
+              WHEN com.github.isacwq.leaguefootball.enums.Position.GOL THEN 1
+              WHEN com.github.isacwq.leaguefootball.enums.Position.ZAG THEN 2
+              WHEN com.github.isacwq.leaguefootball.enums.Position.LAT THEN 3
+              WHEN com.github.isacwq.leaguefootball.enums.Position.MEI THEN 4
+              WHEN com.github.isacwq.leaguefootball.enums.Position.ATA THEN 5
+              ELSE 6
+            END ASC,
+            l.player.name ASC,
+            l.player.id ASC
       """)
   List<PlayerEntity> findLineupEntriesOrdered(@Param("clubId") Long clubId);
 

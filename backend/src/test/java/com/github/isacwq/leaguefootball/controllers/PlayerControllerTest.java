@@ -40,7 +40,8 @@ class PlayerControllerTest {
   @DisplayName("GET /api/v1/players - Deve retornar 200 OK com lista paginada")
   void listPlayers_Returns200Ok() throws Exception {
     PlayerResponseDto player = createPlayerResponse(1L, "Meia Lua", Position.MEI, Condition.APTO);
-    PlayerListResponseDto response = new PlayerListResponseDto(List.of(player), 1, 10, 1L, 1);
+    PageMetaDto meta = new PageMetaDto(1, 10, 1L, 1);
+    PlayerListResponseDto response = new PlayerListResponseDto(List.of(player), meta);
 
     when(playerService.findAll(any(PlayerFilterParamsDto.class))).thenReturn(response);
 
@@ -54,7 +55,7 @@ class PlayerControllerTest {
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$.data[0].id").value(1))
         .andExpect(jsonPath("$.data[0].name").value("Meia Lua"))
-        .andExpect(jsonPath("$.total").value(1));
+        .andExpect(jsonPath("$.meta.total_items").value(1));
   }
 
   @Test

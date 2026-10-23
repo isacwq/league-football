@@ -43,7 +43,7 @@ class TransactionControllerTest {
     mockMvc
         .perform(get("/api/v1/clubs/1/transactions"))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.summary.total_buys").value(38.85));
+        .andExpect(jsonPath("$.summary.total_spent").value(38.85));
   }
 
   @Test

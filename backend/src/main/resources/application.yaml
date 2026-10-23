@@ -16,3 +16,5 @@ spring:
     hibernate:
       ddl-auto: "update"
     database-platform: "org.hibernate.dialect.PostgreSQLDialect"
+cors:
+  origin: ${CORS_ORIGIN:http://localhost:5173}

@@ -139,6 +139,18 @@ npm run dev
 
 ---
 
+## Uso de inteligência artificial
+
+- **Ferramentas:** GitHub Copilot.
+- **Onde:** No backend e nos componentes do frontend.
+- **Como e por quê:** Utilizado para acelerar a escrita de código repetitivo (boilplate de DTOs e validações).
+- **O que foi aceito, alterado ou descartado:**
+  - **Aceito:** Estrutura de rotas e tipagens TypeScript para os contratos das requisições.
+  - **Alterado:** Importações de versões antigas de bibliotecas e classes inexistentes .
+  - **Descartado:** Sugestões de rotas que acessavam o banco diretamente.
+
+---
+
 ## 👤 Autor
 
 Desenvolvido como projeto do estudo de caso **Passe - Gestão de Liga de Futebol**.

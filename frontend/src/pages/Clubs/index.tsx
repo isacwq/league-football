@@ -4,6 +4,7 @@ import { marketService } from '../../services/marketService';
 import { useAppStore } from '../../store/useAppStore';
 import type {
   Club,
+  ClubSortOption,
   ClubWithSquad,
   Player,
   Transaction,
@@ -23,7 +24,6 @@ import { CreateClubModal } from './components/CreateClubModal';
 import { SellPlayerModal } from './components/SellPlayerModal';
 import { LineupSection } from './components/LineupSection';
 
-type ClubSortOption = 'name' | 'net_worth_desc' | 'net_worth_asc';
 type TransactionTypeFilter = 'ALL' | 'COMPRA' | 'VENDA';
 
 const TYPE_OPTIONS: Array<{ value: TransactionTypeFilter; label: string }> = [
@@ -59,20 +59,13 @@ export const ClubsPage: React.FC = () => {
     null
   );
 
-  // Busca a lista geral de clubes
+  // Busca a lista geral de clubes passando o parâmetro sort para a API (RN11)
   const fetchClubs = useCallback(async () => {
     try {
       setLoadingClubs(true);
       setError(null);
-      const data = await clubService.getClubs();
-
-      const sortedClubs = [...data].sort((a, b) => {
-        if (sort === 'net_worth_desc') return b.net_worth - a.net_worth;
-        if (sort === 'net_worth_asc') return a.net_worth - b.net_worth;
-        return a.name.localeCompare(b.name);
-      });
-
-      setClubs(sortedClubs);
+      const data = await clubService.getClubs(sort);
+      setClubs(data);
     } catch (err) {
       const message =
         err instanceof Error
@@ -461,44 +454,65 @@ export const ClubsPage: React.FC = () => {
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-800/60">
-                          {selectedClub.players.map((p) => (
-                            <tr
-                              key={p.id}
-                              className="hover:bg-slate-800/30 transition-colors"
-                            >
-                              <td className="px-4 py-3 font-semibold text-white">
-                                {p.name}
-                              </td>
-                              <td className="px-4 py-3">
-                                <span className="px-2 py-0.5 rounded text-xs bg-slate-800 font-mono font-bold text-slate-300 border border-slate-700">
-                                  {p.position}
-                                </span>
-                              </td>
-                              <td className="px-4 py-3 text-center font-bold text-emerald-400">
-                                {p.overall}
-                              </td>
-                              <td className="px-4 py-3 text-right font-mono font-bold text-white">
-                                R$ {formatCurrency(p.market_value)}
-                              </td>
-                              <td className="px-4 py-3 text-right font-mono text-xs text-slate-400">
-                                R$ {formatCurrency(p.contract?.purchase_value)}
-                              </td>
-                              <td className="px-4 py-3 text-center font-mono text-xs text-amber-300">
-                                {p.contract?.remaining_days ?? 0} dias
-                              </td>
-                              <td className="px-4 py-3 text-center font-mono text-xs text-rose-400">
-                                {p.contract?.penalty_rate ?? 0}%
-                              </td>
-                              <td className="px-4 py-3 text-center">
-                                <button
-                                  onClick={() => setSelectedSellPlayer(p)}
-                                  className="px-3 py-1 bg-rose-600/20 text-rose-400 border border-rose-500/30 hover:bg-rose-600/40 rounded text-xs font-semibold"
-                                >
-                                  Vender
-                                </button>
-                              </td>
-                            </tr>
-                          ))}
+                          {selectedClub.players.map((p) => {
+                            const contract = p.contract;
+                            const rawPlayer = p as unknown as Record<
+                              string,
+                              unknown
+                            >;
+                            const purchaseVal =
+                              contract?.purchase_value ??
+                              (rawPlayer.purchase_value as number);
+                            const remDays =
+                              contract?.remaining_days ??
+                              (rawPlayer.remaining_days as number) ??
+                              0;
+                            const penRate =
+                              contract?.penalty_rate ??
+                              (rawPlayer.penalty_rate as number) ??
+                              0;
+
+                            return (
+                              <tr
+                                key={p.id}
+                                className="hover:bg-slate-800/30 transition-colors"
+                              >
+                                <td className="px-4 py-3 font-semibold text-white">
+                                  {p.name}
+                                </td>
+                                <td className="px-4 py-3">
+                                  <span className="px-2 py-0.5 rounded text-xs bg-slate-800 font-mono font-bold text-slate-300 border border-slate-700">
+                                    {p.position}
+                                  </span>
+                                </td>
+                                <td className="px-4 py-3 text-center font-bold text-emerald-400">
+                                  {p.overall}
+                                </td>
+                                <td className="px-4 py-3 text-right font-mono font-bold text-white">
+                                  R$ {formatCurrency(p.market_value)}
+                                </td>
+                                <td className="px-4 py-3 text-right font-mono text-xs text-slate-400">
+                                  {purchaseVal !== undefined
+                                    ? `R$ ${formatCurrency(purchaseVal)}`
+                                    : '–'}
+                                </td>
+                                <td className="px-4 py-3 text-center font-mono text-xs text-amber-300">
+                                  {remDays} dias
+                                </td>
+                                <td className="px-4 py-3 text-center font-mono text-xs text-rose-400">
+                                  {penRate}%
+                                </td>
+                                <td className="px-4 py-3 text-center">
+                                  <button
+                                    onClick={() => setSelectedSellPlayer(p)}
+                                    className="px-3 py-1 bg-rose-600/20 text-rose-400 border border-rose-500/30 hover:bg-rose-600/40 rounded text-xs font-semibold"
+                                  >
+                                    Vender
+                                  </button>
+                                </td>
+                              </tr>
+                            );
+                          })}
                         </tbody>
                       </table>
                     </div>

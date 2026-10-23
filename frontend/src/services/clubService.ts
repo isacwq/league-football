@@ -1,6 +1,7 @@
 import { api } from './api';
 import type {
   Club,
+  ClubSortOption,
   ClubWithSquad,
   CreateClubDTO,
   Lineup,
@@ -11,13 +12,16 @@ export const clubService = {
   /**
    * Lista todos os clubes cadastrados na liga futebolística.
    *
-   * Consome o endpoint `GET /clubs`, retornando o patrimônio, saldo em caixa,
-   * quantidade de atletas e dados cadastrais de cada equipe.
+   * Consome o endpoint `GET /clubs?sort=...`, retornando a lista de clubes
+   * ordenada diretamente pela API conforme a regra RN11.
    *
-   * @returns Promise que resolve com a lista de clubes cadastrados.
+   * @param sort - Opção de ordenação: 'name' (A-Z), 'net_worth_desc' ou 'net_worth_asc'.
+   * @returns Promise que resolve com a lista de clubes ordenada.
    */
-  async getClubs(): Promise<Club[]> {
-    const response = await api.get<Club[]>('/clubs');
+  async getClubs(sort?: ClubSortOption): Promise<Club[]> {
+    const response = await api.get<Club[]>('/clubs', {
+      params: { sort },
+    });
     return response.data;
   },
 

@@ -12,6 +12,8 @@ export type Formation = '3-1' | '2-2' | '2-1-1' | '1-2-1';
 
 export type MatchResult = 'MANDANTE' | 'VISITANTE' | 'EMPATE';
 
+export type ClubSortOption = 'name' | 'net_worth_asc' | 'net_worth_desc';
+
 // 1. JOGADORES (PLAYER)
 
 export interface Player {

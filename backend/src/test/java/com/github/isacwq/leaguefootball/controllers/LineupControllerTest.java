@@ -3,15 +3,20 @@ package com.github.isacwq.leaguefootball.controllers;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import com.github.isacwq.leaguefootball.dtos.LineupResponseDto;
+import com.github.isacwq.leaguefootball.dtos.PlayerResponseDto;
 import com.github.isacwq.leaguefootball.dtos.UpdateLineupDto;
+import com.github.isacwq.leaguefootball.enums.Condition;
 import com.github.isacwq.leaguefootball.enums.Formation;
+import com.github.isacwq.leaguefootball.enums.Position;
 import com.github.isacwq.leaguefootball.exceptions.BusinessRuleException;
 import com.github.isacwq.leaguefootball.exceptions.GlobalExceptionHandler;
 import com.github.isacwq.leaguefootball.services.LineupService;
+import java.math.BigDecimal;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -67,5 +72,55 @@ class LineupControllerTest {
         .andExpect(status().isConflict())
         .andExpect(
             jsonPath("$.message").value("Jogador com condição DOENTE não pode ser escalado."));
+  }
+
+  @Test
+  @DisplayName(
+      "GET /api/v1/clubs/{id}/lineup - Deve retornar os 5 titulares na ordem tática oficial [RN11,"
+          + " RN19]")
+  void getLineup_ReturnsPlayersInTacticalPositionOrder() throws Exception {
+    List<PlayerResponseDto> mockPlayers =
+        List.of(
+            createPlayerDto(10L, "Goleiro", Position.GOL),
+            createPlayerDto(11L, "Zagueiro", Position.ZAG),
+            createPlayerDto(12L, "Lateral", Position.LAT),
+            createPlayerDto(13L, "Meia", Position.MEI),
+            createPlayerDto(14L, "Atacante", Position.ATA));
+
+    LineupResponseDto mockResponse =
+        new LineupResponseDto(1L, Formation.F_2_1_1, true, mockPlayers);
+
+    when(lineupService.findByClubId(1L)).thenReturn(mockResponse);
+
+    mockMvc
+        .perform(get("/api/v1/clubs/1/lineup"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.players[0].position").value("GOL"))
+        .andExpect(jsonPath("$.players[1].position").value("ZAG"))
+        .andExpect(jsonPath("$.players[2].position").value("LAT"))
+        .andExpect(jsonPath("$.players[3].position").value("MEI"))
+        .andExpect(jsonPath("$.players[4].position").value("ATA"));
+  }
+
+  private PlayerResponseDto createPlayerDto(Long id, String name, Position position) {
+    return new PlayerResponseDto(
+        id,
+        name,
+        position,
+        80,
+        22,
+        70,
+        70,
+        70,
+        70,
+        70,
+        70,
+        80,
+        75,
+        BigDecimal.valueOf(50.00),
+        BigDecimal.valueOf(50.00),
+        Condition.APTO,
+        1L,
+        "Águias FC");
   }
 }

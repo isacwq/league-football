@@ -15,6 +15,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +25,8 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 public class TransactionServiceImpl implements TransactionService {
+
+  private static final Locale PT_BR = new Locale("pt", "BR");
 
   private final TransactionRepository transactionRepository;
   private final ClubRepository clubRepository;
@@ -95,24 +98,36 @@ public class TransactionServiceImpl implements TransactionService {
               ? "\"" + t.getPlayerName().replace("\"", "\"\"") + "\""
               : t.getPlayerName();
 
-      String profitStr =
-          t.getProfit() != null ? String.format("%.2f", t.getProfit()).replace('.', ',') : "";
-
-      sb.append(
-          String.format(
-                  "%s;%s;%s;%.2f;%.2f;%.2f;%s;%.2f\n",
-                  t.getCreatedAt().format(dtf),
-                  t.getType().name(),
-                  name,
-                  t.getValue(),
-                  t.getFee(),
-                  t.getPenalty(),
-                  profitStr,
-                  t.getCashChange())
-              .replace('.', ','));
+      sb.append(t.getCreatedAt().format(dtf))
+          .append(";")
+          .append(t.getType().name())
+          .append(";")
+          .append(name)
+          .append(";")
+          .append(formatMoney(t.getValue()))
+          .append(";")
+          .append(formatMoney(t.getFee()))
+          .append(";")
+          .append(formatMoney(t.getPenalty()))
+          .append(";")
+          .append(formatMoney(t.getProfit()))
+          .append(";")
+          .append(formatMoney(t.getCashChange()))
+          .append("\n");
     }
 
     return sb.toString();
+  }
+
+  /**
+   * Formata valores decimais no padrão brasileiro (2 casas e vírgula decimal)
+   * sem alterar caracteres de texto dos demais campos.
+   */
+  private String formatMoney(@Nullable BigDecimal value) {
+    if (value == null) {
+      return "";
+    }
+    return String.format(PT_BR, "%.2f", value);
   }
 
   private List<TransactionType> parseTypes(@Nullable String typeParam) {

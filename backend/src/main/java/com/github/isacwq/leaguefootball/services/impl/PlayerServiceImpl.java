@@ -275,6 +275,10 @@ public class PlayerServiceImpl implements PlayerService {
       return Sort.by("name").ascending().and(Sort.by("id").ascending());
     }
 
+    if (sortParam.contains("position")) {
+      return Sort.unsorted();
+    }
+
     String[] criteria = sortParam.split(",");
     Sort sortResult = Sort.unsorted();
 

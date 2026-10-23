@@ -2,6 +2,8 @@ package com.github.isacwq.leaguefootball.repositories;
 
 import com.github.isacwq.leaguefootball.dtos.PlayerFilterParamsDto;
 import com.github.isacwq.leaguefootball.entities.PlayerEntity;
+import com.github.isacwq.leaguefootball.enums.Position;
+import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Predicate;
 import java.util.ArrayList;
 import java.util.List;
@@ -53,6 +55,19 @@ public class PlayerSpecifications {
       }
       if (f.maxValue() != null) {
         predicates.add(cb.lessThanOrEqualTo(root.get("baseValue"), f.maxValue()));
+      }
+
+      if ("position".equalsIgnoreCase(f.sort())) {
+        Expression<Integer> posOrder =
+            cb.<Integer>selectCase()
+                .when(cb.equal(root.get("position"), Position.GOL), 1)
+                .when(cb.equal(root.get("position"), Position.ZAG), 2)
+                .when(cb.equal(root.get("position"), Position.LAT), 3)
+                .when(cb.equal(root.get("position"), Position.MEI), 4)
+                .when(cb.equal(root.get("position"), Position.ATA), 5)
+                .otherwise(6);
+
+        query.orderBy(cb.asc(posOrder), cb.asc(root.get("name")), cb.asc(root.get("id")));
       }
 
       return cb.and(predicates.toArray(new Predicate[0]));

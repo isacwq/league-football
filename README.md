@@ -101,12 +101,18 @@ podman run --name pg-16.15-alpine3.24-senai-8 -e POSTGRES_PASSWORD=postgres -e P
 ### **1. Executando o Backend**
 ```bash
 cd backend
-
+export DB_HOST=localhost
+export DB_PORT=5432
+export DB_NAME=league_football
+export CORS_ORIGIN=http://localhost:5173
+./gradlew flywayMigrate
+./gradlew bootRun
 ```
 
 ### **2. Executando o Frontend**
 ```bash
 cd frontend
+export VITE_API_URL=http://localhost:5173/api/v1
 npm install
 npm run dev
 ```
